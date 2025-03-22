@@ -4,70 +4,43 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-import { AuthProvider, useAuth } from "@/context/AuthContext";
-import Login from "@/pages/Login";
-import ResetPassword from "@/pages/ResetPassword";
-import Dashboard from "@/pages/Dashboard";
-import NotFound from "@/pages/NotFound";
-import Layout from "@/components/Layout";
+import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
+import Students from "./pages/Students";
+import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
+import Users from "./pages/Users";
+import ActivityLog from "./pages/ActivityLog";
+import Notes from "./pages/Notes";
+import Attendance from "./pages/Attendance";
+import Classes from "./pages/Classes";
 
 const queryClient = new QueryClient();
 
-// Protected route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, loading } = useAuth();
-  
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse-slow">Loading...</div>
-      </div>
-    );
-  }
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-  
-  return <>{children}</>;
-};
-
-const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
-  
-  return (
-    <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <Layout>
-            <Dashboard />
-          </Layout>
-        </ProtectedRoute>
-      } />
-      
-      {/* Redirect root to dashboard if authenticated, otherwise to login */}
-      <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
-      
-      {/* Catch all other routes */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner position="top-right" closeButton richColors />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/students" element={<Students />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/activity-log" element={<ActivityLog />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/attendance" element={<Attendance />} />
+          <Route path="/classes" element={<Classes />} />
+          <Route path="/classes/:id" element={<NotFound />} /> {/* Placeholder for future class details page */}
+          <Route path="/classes/:id/edit" element={<NotFound />} /> {/* Placeholder for future class edit page */}
+          <Route path="/classes/create" element={<NotFound />} /> {/* Placeholder for future class creation page */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
